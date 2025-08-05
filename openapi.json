@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "MAGDA API Documentation",
-    "version": "5.3.1",
+    "version": "5.4.0",
     "description": "This API documentation is for the open data platform MAGDA. REST is used. Unless stated otherwise, the JSON data format is used for all request and response body."
   },
   "servers": [
