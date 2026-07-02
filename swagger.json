@@ -4569,6 +4569,36 @@
         }
       }
     },
+    "/v0/registry/records/filterByAccess": {
+      "post": {
+        "tags": [
+          "Registry_Record_Service"
+        ],
+        "summary": "Filter record ids by access",
+        "description": "<p>Filter the supplied record ids and return only those the current user can read.</p>",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requestData": {
+                  "type": "string[]",
+                  "description": "<p>JSON array of record ids, e.g. [&quot;id1&quot;, &quot;id2&quot;]</p>"
+                }
+              },
+              "required": [
+                "requestData"
+              ]
+            }
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/v0/registry/hooks/{id}": {
       "delete": {
         "tags": [

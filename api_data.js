@@ -8536,6 +8536,76 @@ define({ "api": [
   },
   {
     "group": "Registry_Record_Service",
+    "type": "post",
+    "url": "/v0/registry/records/filterByAccess",
+    "title": "Filter record ids by access",
+    "description": "<p>Filter the supplied record ids and return only those the current user can read.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "number",
+            "optional": false,
+            "field": "X-Magda-Tenant-Id",
+            "description": "<p>Magda internal tenant id</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session id</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "body": [
+          {
+            "group": "body",
+            "type": "string[]",
+            "optional": false,
+            "field": "requestData",
+            "description": "<p>JSON array of record ids, e.g. [&quot;id1&quot;, &quot;id2&quot;]</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "string[]",
+            "optional": false,
+            "field": "Response",
+            "description": "<p>filtered record ids</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsServiceRO.scala",
+    "groupTitle": "Registry_Record_Service",
+    "name": "PostV0RegistryRecordsFilterbyaccess",
+    "error": {
+      "fields": {
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "ResponseBody",
+            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "group": "Registry_Record_Service",
     "type": "put",
     "url": "/v0/registry/records/{id}",
     "title": "Modify a record by ID",
