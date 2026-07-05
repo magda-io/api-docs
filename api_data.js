@@ -10328,10 +10328,73 @@ define({ "api": [
   },
   {
     "group": "Storage",
+    "type": "delete",
+    "url": "/v0/storage/multipart/abort/{bucket}/{path}",
+    "title": "Abort a multipart upload",
+    "description": "<p>Aborts an in-progress multipart upload and discards any parts that have already been uploaded. The operation is idempotent — aborting an upload that no longer exists still returns <code>200</code>.</p> <p>Incomplete multipart uploads that are never completed or aborted are also cleaned up automatically by a bucket lifecycle rule after <code>incompleteUploadExpiryDays</code> (default 7).</p> <p>Authorized solely by the signed <code>uploadId</code> token.</p>",
+    "parameter": {
+      "fields": {
+        "Request path": [
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "bucket",
+            "description": "<p>The bucket of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          },
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>The object key of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          }
+        ],
+        "Request query": [
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": false,
+            "field": "uploadId",
+            "description": "<p>The signed upload session token returned by &quot;initiate&quot;.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "200",
+          "content": "{\n    \"aborted\": true\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "401",
+          "content": "{\n    \"message\": \"Invalid or expired uploadId: {error}\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "500",
+          "content": "{\n    \"message\": \"Failed to abort multipart upload: {error}\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-storage-api/src/registerMultipartRoutes.ts",
+    "groupTitle": "Storage API",
+    "name": "DeleteV0StorageMultipartAbortBucketPath"
+  },
+  {
+    "group": "Storage",
     "type": "get",
     "url": "/v0/storage/{bucket}/{path}",
     "title": "Request to download an object in {bucket} at path {path}",
-    "description": "<p>Downloads an object Please note: Besides users have <code>storage/object/read</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/read</code> permission to an existing record.</li> </ul>",
+    "description": "<p>Downloads an object.</p> <p>Supports HTTP range requests. The response always advertises an <code>Accept-Ranges: bytes</code> header. When the request carries a <code>Range</code> header with a single satisfiable byte range (e.g. <code>bytes=0-1023</code>, <code>bytes=1024-</code>, or <code>bytes=-512</code>), the response is <code>206 Partial Content</code> containing only the requested bytes plus a <code>Content-Range: bytes {start}-{end}/{size}</code> header — enabling resumable and seekable downloads of large objects. A request with no <code>Range</code> header returns the full object with <code>200</code>. Only a single range is supported (multipart/byteranges responses are not returned).</p> <p>Please note: Besides users have <code>storage/object/read</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/read</code> permission to an existing record.</li> </ul>",
     "parameter": {
       "fields": {
         "Request path": [
@@ -10349,6 +10412,15 @@ define({ "api": [
             "field": "path",
             "description": "<p>The name of the object being requested</p>"
           }
+        ],
+        "Request header": [
+          {
+            "group": "Request header",
+            "type": "string",
+            "optional": true,
+            "field": "Range",
+            "description": "<p>Optional single byte range (e.g. <code>bytes=0-1023</code>). When present and satisfiable, the response is <code>206 Partial Content</code>.</p>"
+          }
         ]
       }
     },
@@ -10356,7 +10428,12 @@ define({ "api": [
       "examples": [
         {
           "title": "200",
-          "content": "<Contents of a file>",
+          "content": "<Full contents of the file. Response includes `Accept-Ranges: bytes`.>",
+          "type": "binary"
+        },
+        {
+          "title": "206",
+          "content": "<Requested byte range of the file. Response includes `Content-Range: bytes {start}-{end}/{size}`.>",
           "type": "binary"
         }
       ]
@@ -10365,7 +10442,12 @@ define({ "api": [
       "examples": [
         {
           "title": "404",
-          "content": "\"No such object with path {path} in bucket {bucket}\"",
+          "content": "\"Cannot locate storage object: {bucket}/{path}\"",
+          "type": "text"
+        },
+        {
+          "title": "416",
+          "content": "(Requested range not satisfiable. Empty body; the `Content-Range` response header reports the total object size.)",
           "type": "text"
         },
         {
@@ -10379,6 +10461,241 @@ define({ "api": [
     "filename": "/home/runner/work/magda/magda/magda-storage-api/src/createApiRouter.ts",
     "groupTitle": "Storage API",
     "name": "GetV0StorageBucketPath"
+  },
+  {
+    "group": "Storage",
+    "type": "get",
+    "url": "/v0/storage/multipart/parts/{bucket}/{path}",
+    "title": "List uploaded multipart parts",
+    "description": "<p>Lists the parts that have already been uploaded for an in-progress multipart upload. Useful for resuming an interrupted upload: the client can skip parts already present and re-upload only the missing ones.</p> <p>Authorized solely by the signed <code>uploadId</code> token.</p>",
+    "parameter": {
+      "fields": {
+        "Request path": [
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "bucket",
+            "description": "<p>The bucket of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          },
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>The object key of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          }
+        ],
+        "Request query": [
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": false,
+            "field": "uploadId",
+            "description": "<p>The signed upload session token returned by &quot;initiate&quot;.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "200",
+          "content": "{\n    \"parts\": [\n        { \"partNumber\": 1, \"etag\": \"d41d8cd98f00b204e9800998ecf8427e\", \"size\": 16777216 },\n        { \"partNumber\": 2, \"etag\": \"e2fc714c4727ee9395f324cd2e7f331f\", \"size\": 16777216 }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "401",
+          "content": "{\n    \"message\": \"Invalid or expired uploadId: {error}\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "500",
+          "content": "{\n    \"message\": \"Failed to list parts: {error}\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-storage-api/src/registerMultipartRoutes.ts",
+    "groupTitle": "Storage API",
+    "name": "GetV0StorageMultipartPartsBucketPath"
+  },
+  {
+    "group": "Storage",
+    "type": "post",
+    "url": "/v0/storage/multipart/complete/{bucket}/{path}",
+    "title": "Complete a multipart upload",
+    "description": "<p>Finalizes an in-progress multipart upload, assembling the uploaded parts into the final object and applying the metadata captured at &quot;initiate&quot; (content type, record association, owner, org unit).</p> <p>The request body must list every uploaded part as <code>{partNumber, etag}</code> using the etags returned by the &quot;Upload a multipart part&quot; responses. Parts may be supplied in any order (the server sorts them by part number).</p> <p>In addition to the signed <code>uploadId</code> token, this endpoint re-runs the full <code>storage/object/upload</code> authorization decision (the object materializes here), so the request must be authenticated — supply the caller's session/API key — and, if a <code>recordId</code> was provided at initiate, the user must have the corresponding <code>object/record/create</code> or <code>object/record/update</code> permission.</p>",
+    "parameter": {
+      "fields": {
+        "Request path": [
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "bucket",
+            "description": "<p>The bucket of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          },
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>The object key of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          }
+        ],
+        "Request query": [
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": false,
+            "field": "uploadId",
+            "description": "<p>The signed upload session token returned by &quot;initiate&quot;.</p>"
+          }
+        ],
+        "Request body": [
+          {
+            "group": "Request body",
+            "type": "Object[]",
+            "optional": false,
+            "field": "parts",
+            "description": "<p>The uploaded parts.</p>"
+          },
+          {
+            "group": "Request body",
+            "type": "number",
+            "optional": false,
+            "field": "parts.partNumber",
+            "description": "<p>The part number (1-10000).</p>"
+          },
+          {
+            "group": "Request body",
+            "type": "string",
+            "optional": false,
+            "field": "parts.etag",
+            "description": "<p>The etag returned when the part was uploaded.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n   \"parts\": [\n       { \"partNumber\": 1, \"etag\": \"d41d8cd98f00b204e9800998ecf8427e\" },\n       { \"partNumber\": 2, \"etag\": \"e2fc714c4727ee9395f324cd2e7f331f\" }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "200",
+          "content": "{\n    \"message\": \"File uploaded successfully\",\n    \"etag\": \"3858f62230ac3c915f300c664312c11f-2\",\n    \"versionId\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "400",
+          "content": "{\n    \"message\": \"Request body must include a non-empty `parts` array.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "401",
+          "content": "{\n    \"message\": \"Invalid or expired uploadId: {error}\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-storage-api/src/registerMultipartRoutes.ts",
+    "groupTitle": "Storage API",
+    "name": "PostV0StorageMultipartCompleteBucketPath"
+  },
+  {
+    "group": "Storage",
+    "type": "post",
+    "url": "/v0/storage/multipart/initiate/{bucket}/{path}",
+    "title": "Initiate a multipart upload",
+    "description": "<p>Starts a resumable S3 multipart upload for a large object and returns a signed <code>uploadId</code> token plus recommended part-size guidance. The client then uploads the object in parts (see &quot;Upload a multipart part&quot;), lists/resumes parts if needed, and finally completes (or aborts) the upload.</p> <p>Because each part is uploaded in its own request, the per-request body stays small regardless of the total object size — so no ingress body-size increase is required for arbitrarily large uploads.</p> <p>Authorization is enforced here (and again at &quot;complete&quot;) using the same <code>storage/object/upload</code> decision as the single-shot upload endpoints. In addition to users who have <code>storage/object/upload</code> permission, a user also has access when:</p> <ul> <li>the object is (to be) associated with a record via <code>recordId</code>, and</li> <li>the user has <code>object/record/create</code> or <code>object/record/update</code> permission to that record.</li> </ul> <p>The returned <code>uploadId</code> is a signed token that binds the upload session to this user, bucket, and object key; supply it on all subsequent part / list / complete / abort requests.</p>",
+    "parameter": {
+      "fields": {
+        "Request path": [
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "bucket",
+            "description": "<p>The name of the bucket to upload to.</p>"
+          },
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>The object key (path) to create within the bucket.</p>"
+          }
+        ],
+        "Request query": [
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": true,
+            "field": "recordId",
+            "description": "<p>A record id to associate the object with. A user will only be allowed to access the object if they're also allowed to access the associated record. Should be url encoded.</p>"
+          },
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": true,
+            "field": "orgUnitId",
+            "description": "<p>(Optional) The id of the orgUnit that the object belongs to.</p>"
+          }
+        ],
+        "Request header": [
+          {
+            "group": "Request header",
+            "type": "string",
+            "optional": true,
+            "field": "Content-Type",
+            "description": "<p>Content type to store with the object (applied on completion).</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "200",
+          "content": "{\n    \"uploadId\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...(signed token)\",\n    \"recommendedPartSize\": \"16mb\",\n    \"recommendedPartSizeBytes\": 16777216,\n    \"maxPartSize\": \"64mb\",\n    \"maxPartSizeBytes\": 67108864,\n    \"minPartSize\": 5242880\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "400",
+          "content": "\"object key: {path} is not valid storage object key.\"",
+          "type": "text"
+        },
+        {
+          "title": "500",
+          "content": "{\n    \"message\": \"Failed to initiate multipart upload: {error}\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-storage-api/src/registerMultipartRoutes.ts",
+    "groupTitle": "Storage API",
+    "name": "PostV0StorageMultipartInitiateBucketPath"
   },
   {
     "group": "Storage",
@@ -10519,7 +10836,7 @@ define({ "api": [
   },
   {
     "group": "Storage",
-    "type": "PUT",
+    "type": "put",
     "url": "/v0/storage/buckets/{bucketid}",
     "title": "Request to create a new bucket",
     "description": "<p>Creates a new bucket with a specified name.</p>",
@@ -10579,6 +10896,95 @@ define({ "api": [
     "filename": "/home/runner/work/magda/magda/magda-storage-api/src/createApiRouter.ts",
     "groupTitle": "Storage API",
     "name": "PutV0StorageBucketsBucketid"
+  },
+  {
+    "group": "Storage",
+    "type": "put",
+    "url": "/v0/storage/multipart/part/{bucket}/{path}",
+    "title": "Upload a multipart part",
+    "description": "<p>Uploads a single part of an in-progress multipart upload. The raw part bytes are sent as the request body (any content type). Parts may be uploaded in any order and, where the client supports it, concurrently.</p> <p>Each part except the last must be at least 5 MB (the S3 minimum), and a part must not exceed the server's configured <code>maxPartSize</code> (returned by &quot;initiate&quot;), otherwise the request is rejected with <code>413</code>. Capture the returned <code>etag</code> for each part — it is required (paired with the part number) to complete the upload.</p> <p>This endpoint is authorized solely by the signed <code>uploadId</code> token issued at &quot;initiate&quot; (no separate permission check runs per part).</p>",
+    "parameter": {
+      "fields": {
+        "Request path": [
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "bucket",
+            "description": "<p>The bucket of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          },
+          {
+            "group": "Request path",
+            "type": "string",
+            "optional": false,
+            "field": "path",
+            "description": "<p>The object key of the in-progress upload (must match the <code>uploadId</code>).</p>"
+          }
+        ],
+        "Request query": [
+          {
+            "group": "Request query",
+            "type": "string",
+            "optional": false,
+            "field": "uploadId",
+            "description": "<p>The signed upload session token returned by &quot;initiate&quot;.</p>"
+          },
+          {
+            "group": "Request query",
+            "type": "number",
+            "optional": false,
+            "field": "partNumber",
+            "description": "<p>The part number, an integer between 1 and 10000.</p>"
+          }
+        ],
+        "Request body": [
+          {
+            "group": "Request body",
+            "type": "binary",
+            "optional": false,
+            "field": "body",
+            "description": "<p>The raw bytes of this part.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "200",
+          "content": "{\n    \"partNumber\": 1,\n    \"etag\": \"d41d8cd98f00b204e9800998ecf8427e\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "400",
+          "content": "{\n    \"message\": \"partNumber must be an integer between 1 and 10000.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "401",
+          "content": "{\n    \"message\": \"uploadId does not match the target object.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "413",
+          "content": "(Part body exceeds the configured maxPartSize.)",
+          "type": "json"
+        },
+        {
+          "title": "502",
+          "content": "{\n    \"message\": \"Failed to upload part: {error}\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-storage-api/src/registerMultipartRoutes.ts",
+    "groupTitle": "Storage API",
+    "name": "PutV0StorageMultipartPartBucketPath"
   },
   {
     "group": "Tenants",
