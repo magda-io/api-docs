@@ -3441,53 +3441,31 @@
         }
       }
     },
-    "/v0/registry/aspects": {
-      "get": {
+    "/v0/registry/aspects/{id}": {
+      "delete": {
         "tags": [
           "Registry_Aspects"
         ],
-        "summary": "Get a list of all aspects",
-        "parameters": [],
+        "summary": "Delete an aspect definition by ID",
+        "description": "<p>Deletes an aspect definition.</p> <p>The aspect definition can only be deleted when no record aspect data references it (within the current tenant). If any record still stores data under the aspect, the request is refused with a <code>409 Conflict</code> response and nothing is deleted; delete the referencing record aspect data first.</p> <p>Deleting an aspect that does not exist responds with <code>200</code> and <code>{ &quot;deleted&quot;: false }</code> (rather than <code>404</code>), mirroring the behaviour of <code>DELETE /v0/registry/records/{recordId}</code>.</p>",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "description": "<p>ID of the aspect to be deleted.</p>",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "Response:": {
-            "description": "<pre>\n[\n  {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"jsonSchema\": {}\n  }\n  ...\n]<pre>"
+            "description": "<pre>{\n  \"deleted\": true\n}<pre>"
+          },
+          "409-Conflict:": {
+            "description": "<pre>{\n  \"message\": \"Cannot delete the aspect definition: 3 record(s) still reference it. Delete the referencing record aspect data first.\"\n}<pre>"
           }
         }
       },
-      "post": {
-        "tags": [
-          "Registry_Aspects"
-        ],
-        "summary": "Create a new aspect",
-        "description": "<p>Acknowledges a previously-deferred web hook with a given ID. Acknowledging a previously-POSTed web hook will cause the next, if any, to be sent.</p>",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Request body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "aspect": {
-                  "type": "json",
-                  "description": "<p>The definition of the new aspect.</p>"
-                }
-              },
-              "required": [
-                "aspect"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "Response:": {
-            "description": "<pre>\n{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"jsonSchema\": {}\n}<pre>"
-          }
-        }
-      }
-    },
-    "/v0/registry/aspects/{id}": {
       "get": {
         "tags": [
           "Registry_Aspects"
@@ -3573,6 +3551,52 @@
                 "aspect": {
                   "type": "json",
                   "description": "<p>The aspect to save.</p>"
+                }
+              },
+              "required": [
+                "aspect"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "Response:": {
+            "description": "<pre>\n{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"jsonSchema\": {}\n}<pre>"
+          }
+        }
+      }
+    },
+    "/v0/registry/aspects": {
+      "get": {
+        "tags": [
+          "Registry_Aspects"
+        ],
+        "summary": "Get a list of all aspects",
+        "parameters": [],
+        "responses": {
+          "Response:": {
+            "description": "<pre>\n[\n  {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"jsonSchema\": {}\n  }\n  ...\n]<pre>"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Registry_Aspects"
+        ],
+        "summary": "Create a new aspect",
+        "description": "<p>Acknowledges a previously-deferred web hook with a given ID. Acknowledging a previously-POSTed web hook will cause the next, if any, to be sent.</p>",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "aspect": {
+                  "type": "json",
+                  "description": "<p>The definition of the new aspect.</p>"
                 }
               },
               "required": [

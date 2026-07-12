@@ -6034,6 +6034,106 @@ define({ "api": [
   },
   {
     "group": "Registry_Aspects",
+    "type": "delete",
+    "url": "/v0/registry/aspects/{id}",
+    "title": "Delete an aspect definition by ID",
+    "description": "<p>Deletes an aspect definition.</p> <p>The aspect definition can only be deleted when no record aspect data references it (within the current tenant). If any record still stores data under the aspect, the request is refused with a <code>409 Conflict</code> response and nothing is deleted; delete the referencing record aspect data first.</p> <p>Deleting an aspect that does not exist responds with <code>200</code> and <code>{ &quot;deleted&quot;: false }</code> (rather than <code>404</code>), mirroring the behaviour of <code>DELETE /v0/registry/records/{recordId}</code>.</p>",
+    "parameter": {
+      "fields": {
+        "path": [
+          {
+            "group": "path",
+            "type": "string",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the aspect to be deleted.</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "number",
+            "optional": false,
+            "field": "X-Magda-Tenant-Id",
+            "description": "<p>0 unless it is a multi-tenant magda deployment.</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session id</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "x-magda-event-id",
+            "description": "<p>This is a <strong>response header</strong> that is <strong>ONLY</strong> available when the operation is completed successfully. If the operation did make changes and triggered an event (i.e. the aspect was actually deleted), the header value will be the eventId. Otherwise (i.e. no aspect was deleted), this header value will be &quot;0&quot;.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "Response",
+            "description": "<p>the aspect definition deletion result</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "{\n  \"deleted\": true\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 409": [
+          {
+            "group": "Error 409",
+            "type": "string",
+            "optional": false,
+            "field": "Response",
+            "description": "<p>Returned when record aspect data still references the aspect; nothing is deleted.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "ResponseBody",
+            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "409-Conflict:",
+          "content": "{\n  \"message\": \"Cannot delete the aspect definition: 3 record(s) still reference it. Delete the referencing record aspect data first.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/AspectsService.scala",
+    "groupTitle": "Registry_Aspects",
+    "name": "DeleteV0RegistryAspectsId"
+  },
+  {
+    "group": "Registry_Aspects",
     "type": "get",
     "url": "/v0/registry/aspects",
     "title": "Get a list of all aspects",
