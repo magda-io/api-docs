@@ -6510,113 +6510,6 @@ define({ "api": [
   {
     "group": "Registry_Record_Aspects",
     "type": "delete",
-    "url": "/v0/registry/records/aspectArrayItems/:aspectId",
-    "title": "Remove items from records' aspect data",
-    "description": "<p>this API goes through the aspect data that is specified by aspectId of a list of registry records and delete items from the array that is located by the jsonPath. If the aspect doesn't exist for a record or the array can't be located with the jsonPath string or the value located with the jsonPath string is <code>null</code>, the operation will be skipped without throwing error. <code>0</code> will returned as eventId for this case. If the json data that is located by the jsonPath string exists and is not an Array or null, an error will be thrown and 400 code will be responded.</p>",
-    "parameter": {
-      "fields": {
-        "path": [
-          {
-            "group": "path",
-            "type": "string",
-            "optional": false,
-            "field": "aspectId",
-            "description": "<p>the id of the aspect to be updated</p>"
-          }
-        ],
-        "body": [
-          {
-            "group": "body",
-            "type": "string[]",
-            "optional": false,
-            "field": "recordIds",
-            "description": "<p>a list of record IDs of records to be patched</p>"
-          },
-          {
-            "group": "body",
-            "type": "string",
-            "optional": false,
-            "field": "jsonPath",
-            "description": "<p>the jsonPath string that is used to locate the json array in the record aspect data</p>"
-          },
-          {
-            "group": "body",
-            "type": "any[]",
-            "optional": false,
-            "field": "items",
-            "description": "<p>a list of items to be removed from the located array. The type of the items can be either string or number.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request-Example",
-          "content": "{\n  \"recordIds\": [\"dsd-sds-xsds-22\", \"sds-sdds-2334-dds-34\", \"sdds-3439-34334343\"],\n  \"jsonPath\": \"$.preAuthorisedPermissionIds\",\n  \"items\": [\"b133d777-6208-4aa1-8d0b-80bb49b7e5fc\", \"5d33cc4d-d914-468e-9f02-ae74484af716\"]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "string",
-            "optional": false,
-            "field": "X-Magda-Session",
-            "description": "<p>Magda internal session id</p>"
-          },
-          {
-            "group": "Header",
-            "type": "number",
-            "optional": false,
-            "field": "X-Magda-Tenant-Id",
-            "description": "<p>Magda internal tenant id</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "json",
-            "optional": false,
-            "field": "Response",
-            "description": "<p>a list of event id for each of the affected records after the operations</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Response:",
-          "content": "[122, 123, 124]",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsService.scala",
-    "groupTitle": "Registry_Record_Aspects",
-    "name": "DeleteV0RegistryRecordsAspectarrayitemsAspectid",
-    "error": {
-      "fields": {
-        "Error 500": [
-          {
-            "group": "Error 500",
-            "type": "String",
-            "optional": false,
-            "field": "ResponseBody",
-            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
-          }
-        ]
-      }
-    }
-  },
-  {
-    "group": "Registry_Record_Aspects",
-    "type": "delete",
     "url": "/v0/registry/records/{recordId}/aspects/{aspectId}",
     "title": "Delete a record aspect by ID",
     "description": "<p>Deletes a record aspect.</p>",
@@ -7076,115 +6969,6 @@ define({ "api": [
   {
     "group": "Registry_Record_Aspects",
     "type": "put",
-    "url": "/v0/registry/records/aspects/:aspectId",
-    "title": "Modify a list of records's aspect with same new data",
-    "description": "<p>Modify a list of records's aspect with same new data</p>",
-    "parameter": {
-      "fields": {
-        "path": [
-          {
-            "group": "path",
-            "type": "string",
-            "optional": false,
-            "field": "aspectId",
-            "description": "<p>the id of the aspect to be updated</p>"
-          }
-        ],
-        "query": [
-          {
-            "group": "query",
-            "type": "boolean",
-            "optional": true,
-            "field": "merge",
-            "description": "<p>Indicate whether merge the new data into existing aspect data or replace it. Default: <code>false</code></p>"
-          }
-        ],
-        "body": [
-          {
-            "group": "body",
-            "type": "string[]",
-            "optional": false,
-            "field": "recordIds",
-            "description": "<p>a list of record IDs of records to be patched</p>"
-          },
-          {
-            "group": "body",
-            "type": "object",
-            "optional": false,
-            "field": "data",
-            "description": "<p>the new aspect data. When <code>merge</code> = true, the new data will be merged into existing aspect data (if exists).</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request-Example",
-          "content": "{\n  \"recordIds\": [\"dsd-sds-xsds-22\", \"sds-sdds-2334-dds-34\", \"sdds-3439-34334343\"],\n  \"data\": {\n     \"a\" : 1,\n     \"b\" : [1,2]\n  }\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "string",
-            "optional": false,
-            "field": "X-Magda-Session",
-            "description": "<p>Magda internal session id</p>"
-          },
-          {
-            "group": "Header",
-            "type": "number",
-            "optional": false,
-            "field": "X-Magda-Tenant-Id",
-            "description": "<p>Magda internal tenant id</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "json",
-            "optional": false,
-            "field": "Response",
-            "description": "<p>a list of event id for each of the record after applied the new aspect data</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Response:",
-          "content": "[122, 123, 124]",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsService.scala",
-    "groupTitle": "Registry_Record_Aspects",
-    "name": "PutV0RegistryRecordsAspectsAspectid",
-    "error": {
-      "fields": {
-        "Error 500": [
-          {
-            "group": "Error 500",
-            "type": "String",
-            "optional": false,
-            "field": "ResponseBody",
-            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
-          }
-        ]
-      }
-    }
-  },
-  {
-    "group": "Registry_Record_Aspects",
-    "type": "put",
     "url": "/v0/registry/records/{recordId}/aspects/{aspectId}",
     "title": "Modify a record aspect by ID",
     "description": "<p>Modifies a record aspect. If the aspect does not yet exist on this record, it is created. Please note: when the record (specified by recordId ) doesn't exist, this API will respond 400 error.</p>",
@@ -7556,6 +7340,113 @@ define({ "api": [
     "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsService.scala",
     "groupTitle": "Registry_Record_Service",
     "name": "DeleteV0RegistryRecords"
+  },
+  {
+    "group": "Registry_Record_Service",
+    "type": "delete",
+    "url": "/v0/registry/records/aspectArrayItems/:aspectId",
+    "title": "Remove items from records' aspect data",
+    "description": "<p>this API goes through the aspect data that is specified by aspectId of a list of registry records and delete items from the array that is located by the jsonPath. If the aspect doesn't exist for a record or the array can't be located with the jsonPath string or the value located with the jsonPath string is <code>null</code>, the operation will be skipped without throwing error. <code>0</code> will returned as eventId for this case. If the json data that is located by the jsonPath string exists and is not an Array or null, an error will be thrown and 400 code will be responded.</p>",
+    "parameter": {
+      "fields": {
+        "path": [
+          {
+            "group": "path",
+            "type": "string",
+            "optional": false,
+            "field": "aspectId",
+            "description": "<p>the id of the aspect to be updated</p>"
+          }
+        ],
+        "body": [
+          {
+            "group": "body",
+            "type": "string[]",
+            "optional": false,
+            "field": "recordIds",
+            "description": "<p>a list of record IDs of records to be patched</p>"
+          },
+          {
+            "group": "body",
+            "type": "string",
+            "optional": false,
+            "field": "jsonPath",
+            "description": "<p>the jsonPath string that is used to locate the json array in the record aspect data</p>"
+          },
+          {
+            "group": "body",
+            "type": "any[]",
+            "optional": false,
+            "field": "items",
+            "description": "<p>a list of items to be removed from the located array. The type of the items can be either string or number.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n  \"recordIds\": [\"dsd-sds-xsds-22\", \"sds-sdds-2334-dds-34\", \"sdds-3439-34334343\"],\n  \"jsonPath\": \"$.preAuthorisedPermissionIds\",\n  \"items\": [\"b133d777-6208-4aa1-8d0b-80bb49b7e5fc\", \"5d33cc4d-d914-468e-9f02-ae74484af716\"]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session id</p>"
+          },
+          {
+            "group": "Header",
+            "type": "number",
+            "optional": false,
+            "field": "X-Magda-Tenant-Id",
+            "description": "<p>Magda internal tenant id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "Response",
+            "description": "<p>a list of event id for each of the affected records after the operations</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "[122, 123, 124]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsService.scala",
+    "groupTitle": "Registry_Record_Service",
+    "name": "DeleteV0RegistryRecordsAspectarrayitemsAspectid",
+    "error": {
+      "fields": {
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "ResponseBody",
+            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
+          }
+        ]
+      }
+    }
   },
   {
     "group": "Registry_Record_Service",
@@ -8690,6 +8581,115 @@ define({ "api": [
     "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsServiceRO.scala",
     "groupTitle": "Registry_Record_Service",
     "name": "PostV0RegistryRecordsFilterbyaccess",
+    "error": {
+      "fields": {
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "ResponseBody",
+            "description": "<p>Respone body will contain further information on the error in free text format.</p>"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "group": "Registry_Record_Service",
+    "type": "put",
+    "url": "/v0/registry/records/aspects/:aspectId",
+    "title": "Modify a list of records's aspect with same new data",
+    "description": "<p>Modify a list of records's aspect with same new data</p>",
+    "parameter": {
+      "fields": {
+        "path": [
+          {
+            "group": "path",
+            "type": "string",
+            "optional": false,
+            "field": "aspectId",
+            "description": "<p>the id of the aspect to be updated</p>"
+          }
+        ],
+        "query": [
+          {
+            "group": "query",
+            "type": "boolean",
+            "optional": true,
+            "field": "merge",
+            "description": "<p>Indicate whether merge the new data into existing aspect data or replace it. Default: <code>false</code></p>"
+          }
+        ],
+        "body": [
+          {
+            "group": "body",
+            "type": "string[]",
+            "optional": false,
+            "field": "recordIds",
+            "description": "<p>a list of record IDs of records to be patched</p>"
+          },
+          {
+            "group": "body",
+            "type": "object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>the new aspect data. When <code>merge</code> = true, the new data will be merged into existing aspect data (if exists).</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n  \"recordIds\": [\"dsd-sds-xsds-22\", \"sds-sdds-2334-dds-34\", \"sdds-3439-34334343\"],\n  \"data\": {\n     \"a\" : 1,\n     \"b\" : [1,2]\n  }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session id</p>"
+          },
+          {
+            "group": "Header",
+            "type": "number",
+            "optional": false,
+            "field": "X-Magda-Tenant-Id",
+            "description": "<p>Magda internal tenant id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "Response",
+            "description": "<p>a list of event id for each of the record after applied the new aspect data</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "[122, 123, 124]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-registry-api/src/main/scala/au/csiro/data61/magda/registry/RecordsService.scala",
+    "groupTitle": "Registry_Record_Service",
+    "name": "PutV0RegistryRecordsAspectsAspectid",
     "error": {
       "fields": {
         "Error 500": [

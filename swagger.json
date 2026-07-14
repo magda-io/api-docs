@@ -3612,57 +3612,6 @@
         }
       }
     },
-    "/v0/registry/records/aspectArrayItems/:aspectId": {
-      "delete": {
-        "tags": [
-          "Registry_Record_Aspects"
-        ],
-        "summary": "Remove items from records' aspect data",
-        "description": "<p>this API goes through the aspect data that is specified by aspectId of a list of registry records and delete items from the array that is located by the jsonPath. If the aspect doesn't exist for a record or the array can't be located with the jsonPath string or the value located with the jsonPath string is <code>null</code>, the operation will be skipped without throwing error. <code>0</code> will returned as eventId for this case. If the json data that is located by the jsonPath string exists and is not an Array or null, an error will be thrown and 400 code will be responded.</p>",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "aspectId",
-            "description": "<p>the id of the aspect to be updated</p>",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Request body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "recordIds": {
-                  "type": "string[]",
-                  "description": "<p>a list of record IDs of records to be patched</p>"
-                },
-                "jsonPath": {
-                  "type": "string",
-                  "description": "<p>the jsonPath string that is used to locate the json array in the record aspect data</p>"
-                },
-                "items": {
-                  "type": "any[]",
-                  "description": "<p>a list of items to be removed from the located array. The type of the items can be either string or number.</p>"
-                }
-              },
-              "required": [
-                "recordIds",
-                "jsonPath",
-                "items"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "Response:": {
-            "description": "<pre>[122, 123, 124]<pre>"
-          }
-        }
-      }
-    },
     "/v0/registry/records/{recordId}/aspects/{aspectId}": {
       "delete": {
         "tags": [
@@ -3889,59 +3838,6 @@
         "responses": {
           "Response:": {
             "description": "<pre>{\n  \"count\": 5\n}<pre>"
-          }
-        }
-      }
-    },
-    "/v0/registry/records/aspects/:aspectId": {
-      "put": {
-        "tags": [
-          "Registry_Record_Aspects"
-        ],
-        "summary": "Modify a list of records's aspect with same new data",
-        "description": "<p>Modify a list of records's aspect with same new data</p>",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "aspectId",
-            "description": "<p>the id of the aspect to be updated</p>",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "merge",
-            "description": "<p>Indicate whether merge the new data into existing aspect data or replace it. Default: <code>false</code></p>",
-            "required": false,
-            "type": "boolean"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Request body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "recordIds": {
-                  "type": "string[]",
-                  "description": "<p>a list of record IDs of records to be patched</p>"
-                },
-                "data": {
-                  "type": "object",
-                  "description": "<p>the new aspect data. When <code>merge</code> = true, the new data will be merged into existing aspect data (if exists).</p>"
-                }
-              },
-              "required": [
-                "recordIds",
-                "data"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "Response:": {
-            "description": "<pre>[122, 123, 124]<pre>"
           }
         }
       }
@@ -4242,6 +4138,57 @@
         "responses": {
           "Response:": {
             "description": "<pre>{\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"aspects\": {},\n    \"sourceTag\": \"string\"\n}<pre>"
+          }
+        }
+      }
+    },
+    "/v0/registry/records/aspectArrayItems/:aspectId": {
+      "delete": {
+        "tags": [
+          "Registry_Record_Service"
+        ],
+        "summary": "Remove items from records' aspect data",
+        "description": "<p>this API goes through the aspect data that is specified by aspectId of a list of registry records and delete items from the array that is located by the jsonPath. If the aspect doesn't exist for a record or the array can't be located with the jsonPath string or the value located with the jsonPath string is <code>null</code>, the operation will be skipped without throwing error. <code>0</code> will returned as eventId for this case. If the json data that is located by the jsonPath string exists and is not an Array or null, an error will be thrown and 400 code will be responded.</p>",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "aspectId",
+            "description": "<p>the id of the aspect to be updated</p>",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "recordIds": {
+                  "type": "string[]",
+                  "description": "<p>a list of record IDs of records to be patched</p>"
+                },
+                "jsonPath": {
+                  "type": "string",
+                  "description": "<p>the jsonPath string that is used to locate the json array in the record aspect data</p>"
+                },
+                "items": {
+                  "type": "any[]",
+                  "description": "<p>a list of items to be removed from the located array. The type of the items can be either string or number.</p>"
+                }
+              },
+              "required": [
+                "recordIds",
+                "jsonPath",
+                "items"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "Response:": {
+            "description": "<pre>[122, 123, 124]<pre>"
           }
         }
       }
@@ -4621,6 +4568,59 @@
           }
         ],
         "responses": {}
+      }
+    },
+    "/v0/registry/records/aspects/:aspectId": {
+      "put": {
+        "tags": [
+          "Registry_Record_Service"
+        ],
+        "summary": "Modify a list of records's aspect with same new data",
+        "description": "<p>Modify a list of records's aspect with same new data</p>",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "aspectId",
+            "description": "<p>the id of the aspect to be updated</p>",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "merge",
+            "description": "<p>Indicate whether merge the new data into existing aspect data or replace it. Default: <code>false</code></p>",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "recordIds": {
+                  "type": "string[]",
+                  "description": "<p>a list of record IDs of records to be patched</p>"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "<p>the new aspect data. When <code>merge</code> = true, the new data will be merged into existing aspect data (if exists).</p>"
+                }
+              },
+              "required": [
+                "recordIds",
+                "data"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "Response:": {
+            "description": "<pre>[122, 123, 124]<pre>"
+          }
+        }
       }
     },
     "/v0/registry/hooks/{id}": {
