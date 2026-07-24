@@ -10318,6 +10318,556 @@
     "name": "GetV0SearchRegions"
   },
   {
+    "group": "Semantic_Search",
+    "type": "get",
+    "url": "/v0/semantic-search/search",
+    "title": "Semantic search (GET)",
+    "name": "GetSemanticSearch",
+    "description": "<p>Identical to <code>POST /v0/semantic-search/search</code>, but takes its parameters from the query string. Convenient for quick manual testing.</p>",
+    "parameter": {
+      "fields": {
+        "query": [
+          {
+            "group": "query",
+            "type": "String",
+            "optional": false,
+            "field": "query",
+            "description": "<p>The natural-language query.</p>"
+          },
+          {
+            "group": "query",
+            "type": "Number",
+            "size": "1-500",
+            "optional": true,
+            "field": "max_num_results",
+            "defaultValue": "100",
+            "description": "<p>Maximum number of results to return.</p>"
+          },
+          {
+            "group": "query",
+            "type": "String",
+            "allowedValues": [
+              "\"storageObject\"",
+              "\"registryRecord\""
+            ],
+            "optional": true,
+            "field": "itemType",
+            "description": "<p>Restrict results to one item type.</p>"
+          },
+          {
+            "group": "query",
+            "type": "String",
+            "optional": true,
+            "field": "fileFormat",
+            "description": "<p>Restrict results to a source file format (e.g. <code>PDF</code>).</p>"
+          },
+          {
+            "group": "query",
+            "type": "String",
+            "optional": true,
+            "field": "recordId",
+            "description": "<p>Restrict results to chunks derived from this registry record.</p>"
+          },
+          {
+            "group": "query",
+            "type": "String",
+            "optional": true,
+            "field": "subObjectId",
+            "description": "<p>Restrict results to a sub-object within the source.</p>"
+          },
+          {
+            "group": "query",
+            "type": "String",
+            "optional": true,
+            "field": "subObjectType",
+            "description": "<p>Restrict results to a sub-object type.</p>"
+          },
+          {
+            "group": "query",
+            "type": "Number",
+            "size": "0-1",
+            "optional": true,
+            "field": "minScore",
+            "description": "<p>Drop results whose relevance score is below this threshold.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "result",
+            "description": "<p>JSON array of matching chunks (same shape as the POST endpoint).</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-semantic-search-api/src/api/createApiRouter.ts",
+    "groupTitle": "Semantic_Search",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": true,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session JWT identifying the current user. Without it, the request is treated as anonymous.</p>"
+          },
+          {
+            "group": "Header",
+            "type": "Number",
+            "optional": true,
+            "field": "X-Magda-Tenant-Id",
+            "defaultValue": "0",
+            "description": "<p>Tenant ID. Defaults to <code>0</code> when omitted.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "type": "Object",
+            "optional": false,
+            "field": "error",
+            "description": "<p>Request validation failed (a required parameter is missing or invalid).</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "error",
+            "description": "<p>A short error label, e.g. <code>Internal Server Error</code> or <code>OpenSearch index not found</code>.</p>"
+          },
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": true,
+            "field": "message",
+            "description": "<p>A longer description — for a missing index, a hint to install a semantic indexer so the index is created.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "500 (no index yet)",
+          "content": "{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "group": "Semantic_Search",
+    "type": "post",
+    "url": "/v0/semantic-search/search",
+    "title": "Semantic search (POST)",
+    "name": "PostSemanticSearch",
+    "description": "<p>Runs a natural-language semantic (vector) search over the semantic index and returns the most relevant chunks, each with a relevance score. This is the discovery step: to expand a hit into its full text or neighbouring chunks, pass the returned chunk <code>id</code>s to <code>POST /v0/semantic-search/retrieve</code>. Results are access-filtered for the current user. The searchable content is produced by semantic indexers — see <a href=\"https://github.com/magda-io/magda/blob/main/docs/docs/how-to-build-a-semantic-indexer.md\">How to build a semantic indexer</a>.</p>",
+    "parameter": {
+      "fields": {
+        "body": [
+          {
+            "group": "body",
+            "type": "String",
+            "optional": false,
+            "field": "query",
+            "description": "<p>The natural-language query.</p>"
+          },
+          {
+            "group": "body",
+            "type": "Number",
+            "size": "1-500",
+            "optional": true,
+            "field": "max_num_results",
+            "defaultValue": "100",
+            "description": "<p>Maximum number of results to return.</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "allowedValues": [
+              "\"storageObject\"",
+              "\"registryRecord\""
+            ],
+            "optional": true,
+            "field": "itemType",
+            "description": "<p>Restrict results to one item type.</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "optional": true,
+            "field": "fileFormat",
+            "description": "<p>Restrict results to a source file format (e.g. <code>PDF</code>).</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "optional": true,
+            "field": "recordId",
+            "description": "<p>Restrict results to chunks derived from this registry record.</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "optional": true,
+            "field": "subObjectId",
+            "description": "<p>Restrict results to a sub-object within the source.</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "optional": true,
+            "field": "subObjectType",
+            "description": "<p>Restrict results to a sub-object type.</p>"
+          },
+          {
+            "group": "body",
+            "type": "Number",
+            "size": "0-1",
+            "optional": true,
+            "field": "minScore",
+            "description": "<p>Drop results whose relevance score is below this threshold.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "result",
+            "description": "<p>JSON array of matching chunks (fields below are on each element).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "result.score",
+            "description": "<p>Relevance score (higher is more relevant).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.id",
+            "description": "<p>Chunk ID (pass to <code>/retrieve</code>).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.itemType",
+            "description": "<p><code>storageObject</code> or <code>registryRecord</code>.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.recordId",
+            "description": "<p>The registry record the chunk was derived from.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.parentRecordId",
+            "description": "<p>The parent record (e.g. the dataset of a distribution).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.fileFormat",
+            "description": "<p>Source file format, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.subObjectId",
+            "description": "<p>Identifier of a sub-object within the source, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.subObjectType",
+            "description": "<p>Type of the sub-object, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.text",
+            "description": "<p>The matched indexed text.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "200",
+          "content": "[\n  {\n    \"score\": 0.83,\n    \"id\": \"storageObject-ds-abc-dist-1-0\",\n    \"itemType\": \"storageObject\",\n    \"recordId\": \"dist-1\",\n    \"parentRecordId\": \"ds-abc\",\n    \"fileFormat\": \"PDF\",\n    \"subObjectId\": \"\",\n    \"subObjectType\": \"\",\n    \"text\": \"...\"\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-semantic-search-api/src/api/createApiRouter.ts",
+    "groupTitle": "Semantic_Search",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": true,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session JWT identifying the current user. Without it, the request is treated as anonymous.</p>"
+          },
+          {
+            "group": "Header",
+            "type": "Number",
+            "optional": true,
+            "field": "X-Magda-Tenant-Id",
+            "defaultValue": "0",
+            "description": "<p>Tenant ID. Defaults to <code>0</code> when omitted.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "type": "Object",
+            "optional": false,
+            "field": "error",
+            "description": "<p>Request validation failed (a required parameter is missing or invalid).</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "error",
+            "description": "<p>A short error label, e.g. <code>Internal Server Error</code> or <code>OpenSearch index not found</code>.</p>"
+          },
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": true,
+            "field": "message",
+            "description": "<p>A longer description — for a missing index, a hint to install a semantic indexer so the index is created.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "500 (no index yet)",
+          "content": "{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "group": "Semantic_Search",
+    "type": "post",
+    "url": "/v0/semantic-search/retrieve",
+    "title": "Retrieve chunks by ID",
+    "name": "RetrieveSemanticChunks",
+    "description": "<p>Retrieves semantic-index chunks by their <code>id</code>s (typically those returned by <code>search</code>), optionally including neighbouring chunks for more context. Results are access-filtered for the current user.</p>",
+    "parameter": {
+      "fields": {
+        "body": [
+          {
+            "group": "body",
+            "type": "String[]",
+            "optional": false,
+            "field": "ids",
+            "description": "<p>IDs of the index chunks to retrieve.</p>"
+          },
+          {
+            "group": "body",
+            "type": "String",
+            "allowedValues": [
+              "\"full\"",
+              "\"partial\""
+            ],
+            "optional": true,
+            "field": "mode",
+            "defaultValue": "full",
+            "description": "<p><code>full</code> returns the whole item's text; <code>partial</code> returns the matched chunk plus any requested neighbours.</p>"
+          },
+          {
+            "group": "body",
+            "type": "Number",
+            "size": "0-",
+            "optional": true,
+            "field": "precedingChunksNum",
+            "defaultValue": "0",
+            "description": "<p>Number of chunks immediately before each result to include.</p>"
+          },
+          {
+            "group": "body",
+            "type": "Number",
+            "size": "0-",
+            "optional": true,
+            "field": "subsequentChunksNum",
+            "defaultValue": "0",
+            "description": "<p>Number of chunks immediately after each result to include.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "result",
+            "description": "<p>JSON array of retrieved items (fields below are on each element).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.id",
+            "description": "<p>Chunk ID.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.itemType",
+            "description": "<p><code>storageObject</code> or <code>registryRecord</code>.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.recordId",
+            "description": "<p>The registry record the chunk was derived from.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.parentRecordId",
+            "description": "<p>The parent record (e.g. the dataset of a distribution).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.fileFormat",
+            "description": "<p>Source file format, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.subObjectId",
+            "description": "<p>Identifier of a sub-object within the source, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.subObjectType",
+            "description": "<p>Type of the sub-object, when applicable.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result.text",
+            "description": "<p>The indexed text.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "/home/runner/work/magda/magda/magda-semantic-search-api/src/api/createApiRouter.ts",
+    "groupTitle": "Semantic_Search",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": true,
+            "field": "X-Magda-Session",
+            "description": "<p>Magda internal session JWT identifying the current user. Without it, the request is treated as anonymous.</p>"
+          },
+          {
+            "group": "Header",
+            "type": "Number",
+            "optional": true,
+            "field": "X-Magda-Tenant-Id",
+            "defaultValue": "0",
+            "description": "<p>Tenant ID. Defaults to <code>0</code> when omitted.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "type": "Object",
+            "optional": false,
+            "field": "error",
+            "description": "<p>Request validation failed (a required parameter is missing or invalid).</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": false,
+            "field": "error",
+            "description": "<p>A short error label, e.g. <code>Internal Server Error</code> or <code>OpenSearch index not found</code>.</p>"
+          },
+          {
+            "group": "Error 500",
+            "type": "String",
+            "optional": true,
+            "field": "message",
+            "description": "<p>A longer description — for a missing index, a hint to install a semantic indexer so the index is created.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "500 (no index yet)",
+          "content": "{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "group": "Sitemaps",
     "type": "get",
     "url": "/sitemap/dataset/afterToken/{pageToken}.xml",

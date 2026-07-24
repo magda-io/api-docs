@@ -5944,6 +5944,201 @@
         }
       }
     },
+    "/v0/semantic-search/search": {
+      "get": {
+        "tags": [
+          "Semantic_Search"
+        ],
+        "summary": "Semantic search (GET)",
+        "description": "<p>Identical to <code>POST /v0/semantic-search/search</code>, but takes its parameters from the query string. Convenient for quick manual testing.</p>",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "<p>The natural-language query.</p>",
+            "required": true,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_num_results",
+            "description": "<p>Maximum number of results to return.</p>",
+            "required": false,
+            "schema": {
+              "type": "Number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "itemType",
+            "description": "<p>Restrict results to one item type.</p>",
+            "required": false,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fileFormat",
+            "description": "<p>Restrict results to a source file format (e.g. <code>PDF</code>).</p>",
+            "required": false,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "recordId",
+            "description": "<p>Restrict results to chunks derived from this registry record.</p>",
+            "required": false,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "subObjectId",
+            "description": "<p>Restrict results to a sub-object within the source.</p>",
+            "required": false,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "subObjectType",
+            "description": "<p>Restrict results to a sub-object type.</p>",
+            "required": false,
+            "schema": {
+              "type": "String"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minScore",
+            "description": "<p>Drop results whose relevance score is below this threshold.</p>",
+            "required": false,
+            "schema": {
+              "type": "Number"
+            }
+          }
+        ],
+        "responses": {
+          "500 (no index yet)": {
+            "description": "<pre>{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}<pre>"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Semantic_Search"
+        ],
+        "summary": "Semantic search (POST)",
+        "description": "<p>Runs a natural-language semantic (vector) search over the semantic index and returns the most relevant chunks, each with a relevance score. This is the discovery step: to expand a hit into its full text or neighbouring chunks, pass the returned chunk <code>id</code>s to <code>POST /v0/semantic-search/retrieve</code>. Results are access-filtered for the current user. The searchable content is produced by semantic indexers — see <a href=\"https://github.com/magda-io/magda/blob/main/docs/docs/how-to-build-a-semantic-indexer.md\">How to build a semantic indexer</a>.</p>",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "String",
+                    "description": "<p>The natural-language query.</p>"
+                  },
+                  "max_num_results": {
+                    "type": "Number",
+                    "description": "<p>Maximum number of results to return.</p>"
+                  },
+                  "itemType": {
+                    "type": "String",
+                    "description": "<p>Restrict results to one item type.</p>"
+                  },
+                  "fileFormat": {
+                    "type": "String",
+                    "description": "<p>Restrict results to a source file format (e.g. <code>PDF</code>).</p>"
+                  },
+                  "recordId": {
+                    "type": "String",
+                    "description": "<p>Restrict results to chunks derived from this registry record.</p>"
+                  },
+                  "subObjectId": {
+                    "type": "String",
+                    "description": "<p>Restrict results to a sub-object within the source.</p>"
+                  },
+                  "subObjectType": {
+                    "type": "String",
+                    "description": "<p>Restrict results to a sub-object type.</p>"
+                  },
+                  "minScore": {
+                    "type": "Number",
+                    "description": "<p>Drop results whose relevance score is below this threshold.</p>"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "<pre>[\n  {\n    \"score\": 0.83,\n    \"id\": \"storageObject-ds-abc-dist-1-0\",\n    \"itemType\": \"storageObject\",\n    \"recordId\": \"dist-1\",\n    \"parentRecordId\": \"ds-abc\",\n    \"fileFormat\": \"PDF\",\n    \"subObjectId\": \"\",\n    \"subObjectType\": \"\",\n    \"text\": \"...\"\n  }\n]<pre>"
+          },
+          "500 (no index yet)": {
+            "description": "<pre>{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}<pre>"
+          }
+        }
+      }
+    },
+    "/v0/semantic-search/retrieve": {
+      "post": {
+        "tags": [
+          "Semantic_Search"
+        ],
+        "summary": "Retrieve chunks by ID",
+        "description": "<p>Retrieves semantic-index chunks by their <code>id</code>s (typically those returned by <code>search</code>), optionally including neighbouring chunks for more context. Results are access-filtered for the current user.</p>",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "String[]",
+                    "description": "<p>IDs of the index chunks to retrieve.</p>"
+                  },
+                  "mode": {
+                    "type": "String",
+                    "description": "<p><code>full</code> returns the whole item's text; <code>partial</code> returns the matched chunk plus any requested neighbours.</p>"
+                  },
+                  "precedingChunksNum": {
+                    "type": "Number",
+                    "description": "<p>Number of chunks immediately before each result to include.</p>"
+                  },
+                  "subsequentChunksNum": {
+                    "type": "Number",
+                    "description": "<p>Number of chunks immediately after each result to include.</p>"
+                  }
+                },
+                "required": [
+                  "ids"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "500 (no index yet)": {
+            "description": "<pre>{\n  \"error\": \"OpenSearch index not found\",\n  \"message\": \"OpenSearch index not found: ... - Install at least one semantic indexer to create it automatically.\"\n}<pre>"
+          }
+        }
+      }
+    },
     "/sitemap/dataset/afterToken/{pageToken}.xml": {
       "get": {
         "tags": [
