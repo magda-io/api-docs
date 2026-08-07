@@ -1,6 +1,6 @@
 define({
   "name": "MAGDA API Documentation",
-  "version": "6.1.1",
+  "version": "6.2.0",
   "description": "This API documentation is for the open data platform MAGDA. REST is used. Unless stated otherwise, the JSON data format is used for all request and response body.",
   "title": "MAGDA API",
   "url": "https://<host>/api",
@@ -13,7 +13,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2026-08-03T11:03:02.611Z",
+    "time": "2026-08-07T08:09:57.677Z",
     "url": "https://apidocjs.com",
     "version": "0.17.6"
   }
