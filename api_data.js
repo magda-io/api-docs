@@ -11260,6 +11260,11 @@ define({ "api": [
           "title": "401",
           "content": "{\n    \"message\": \"Invalid or expired uploadId: {error}\"\n}",
           "type": "json"
+        },
+        {
+          "title": "409",
+          "content": "{\n    \"message\": \"The target object's owner has changed since the multipart upload was initiated. Please abort the upload and initiate a new one.\"\n}",
+          "type": "json"
         }
       ]
     },
@@ -11273,7 +11278,7 @@ define({ "api": [
     "type": "post",
     "url": "/v0/storage/multipart/initiate/{bucket}/{path}",
     "title": "Initiate a multipart upload",
-    "description": "<p>Starts a resumable S3 multipart upload for a large object and returns a signed <code>uploadId</code> token plus recommended part-size guidance. The client then uploads the object in parts (see &quot;Upload a multipart part&quot;), lists/resumes parts if needed, and finally completes (or aborts) the upload.</p> <p>Because each part is uploaded in its own request, the per-request body stays small regardless of the total object size — so no ingress body-size increase is required for arbitrarily large uploads.</p> <p>Authorization is enforced here (and again at &quot;complete&quot;) using the same <code>storage/object/upload</code> decision as the single-shot upload endpoints. In addition to users who have <code>storage/object/upload</code> permission, a user also has access when:</p> <ul> <li>the object is (to be) associated with a record via <code>recordId</code>, and</li> <li>the user has <code>object/record/create</code> or <code>object/record/update</code> permission to that record.</li> </ul> <p>The returned <code>uploadId</code> is a signed token that binds the upload session to this user, bucket, and object key; supply it on all subsequent part / list / complete / abort requests.</p>",
+    "description": "<p>Starts a resumable S3 multipart upload for a large object and returns a signed <code>uploadId</code> token plus recommended part-size guidance. The client then uploads the object in parts (see &quot;Upload a multipart part&quot;), lists/resumes parts if needed, and finally completes (or aborts) the upload.</p> <p>Because each part is uploaded in its own request, the per-request body stays small regardless of the total object size — so no ingress body-size increase is required for arbitrarily large uploads.</p> <p>Authorization is enforced here (and again at &quot;complete&quot;) using the same <code>storage/object/upload</code> decision as the single-shot upload endpoints. In addition to users who have <code>storage/object/upload</code> permission, a user also has access when:</p> <ul> <li>the object is (to be) associated with a record via <code>recordId</code>, and</li> <li>the user has <code>object/record/create</code> or <code>object/record/update</code> permission to that record.</li> </ul> <p>The uploader becomes the owner of a new object. When the upload replaces an existing object, the existing object's owner is kept.</p> <p>The returned <code>uploadId</code> is a signed token that binds the upload session to this user, bucket, and object key; supply it on all subsequent part / list / complete / abort requests.</p>",
     "parameter": {
       "fields": {
         "Request path": [
@@ -11352,7 +11357,7 @@ define({ "api": [
     "type": "post",
     "url": "/v0/storage/upload/{bucket}/{path}",
     "title": "Request to upload a file to {bucket}, in the directory {path}",
-    "description": "<p>Uploads a object (file) as &quot;form post&quot; Please note: Besides users have <code>storage/object/upload</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/update</code> or <code>object/record/create</code> permission to an existing record.</li> </ul>",
+    "description": "<p>Uploads a object (file) as &quot;form post&quot; Please note: Besides users have <code>storage/object/upload</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/update</code> or <code>object/record/create</code> permission to an existing record.</li> </ul> <p>The uploader becomes the owner of a new object. When the upload replaces an existing object, the existing object's owner is kept.</p>",
     "parameter": {
       "fields": {
         "Request body": [
@@ -11419,7 +11424,7 @@ define({ "api": [
     "type": "put",
     "url": "/v0/storage/{bucket}/{filePath}?{recordId}",
     "title": "Request to upload an object to {bucket} with name {filePath}",
-    "description": "<p>Uploads an object. Please note: Besides users have <code>storage/object/upload</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/update</code> or <code>object/record/create</code> permission to an existing record.</li> </ul>",
+    "description": "<p>Uploads an object. Please note: Besides users have <code>storage/object/upload</code> permission, a user also has access to a file when:</p> <ul> <li>the file is associated with a record</li> <li>the user has <code>object/record/update</code> or <code>object/record/create</code> permission to an existing record.</li> </ul> <p>The uploader becomes the owner of a new object. When the upload replaces an existing object, the existing object's owner is kept.</p>",
     "parameter": {
       "fields": {
         "Request path": [
